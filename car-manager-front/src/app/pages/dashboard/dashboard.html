@@ -1,0 +1,193 @@
+<div class="dashboard-container">
+  <header class="page-header">
+    <div class="user-welcome">
+      <h1>
+        Bonjour, <span class="text-highlight">{{ userName }}</span
+        >.
+      </h1>
+      <p>Votre garage est prêt.</p>
+    </div>
+
+    <button class="btn-primary" (click)="openModal()" *ngIf="cars.length > 0">
+      + Nouvelle voiture
+    </button>
+  </header>
+
+  <div class="bento-grid" *ngIf="cars.length > 0; else noCarTemplate">
+    <div class="bento-card hero-car">
+      <div class="car-header-nav">
+        <button class="nav-arrow" (click)="prevCar()" [class.disabled]="currentCarIndex === 0">
+          &lt;
+        </button>
+        <div class="car-info">
+          <h2>{{ cars[currentCarIndex].brand }} {{ cars[currentCarIndex].model }}</h2>
+
+          <div
+            class="french-plate"
+            (click)="toggleBlur()"
+            style="cursor: pointer"
+            title="Cliquer pour masquer/afficher"
+          >
+            <div class="plate-band left-band">
+              <span class="stars">***</span><span class="country">F</span>
+            </div>
+
+            <div class="plate-number">
+              {{ formatLicensePlate(cars[currentCarIndex].licensePlate) }}
+              <span class="visibility-indicator">
+                {{ isBlurred ? 'Masqué' : 'Visible' }}
+              </span>
+            </div>
+
+            <div class="plate-band right-band"><span class="dept">33</span></div>
+          </div>
+        </div>
+        <button
+          class="nav-arrow"
+          (click)="nextCar()"
+          [class.disabled]="currentCarIndex === cars.length - 1"
+        >
+          &gt;
+        </button>
+      </div>
+
+      <div class="car-visual">
+        <img [src]="getCarImage(cars[currentCarIndex])" alt="Voiture" class="car-img" />
+      </div>
+
+      <div class="car-footer">
+        <button class="btn-danger-ghost" (click)="deleteCar()">Retirer du garage</button>
+        <button class="btn-primary" (click)="goToGarage(cars[currentCarIndex].id)">
+          Entrer dans le garage virtuel
+        </button>
+      </div>
+    </div>
+
+    <div class="bento-card health-widget">
+      <h3>Contrôle Technique</h3>
+      <div class="ring-container" [ngClass]="getCtStatus(cars[currentCarIndex]).colorClass">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+          <path
+            class="circle-bg"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <path
+            class="circle"
+            [attr.stroke-dasharray]="getCtStatus(cars[currentCarIndex]).dasharray"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+
+        <div class="percentage">{{ getCtStatus(cars[currentCarIndex]).text }}</div>
+      </div>
+    </div>
+
+    <div class="stat-box">
+      <span class="stat-label">KILOMÉTRAGE</span>
+
+      <div
+        class="stat-value-container"
+        *ngIf="!isEditingKm"
+        (click)="startEditKm(cars[currentCarIndex])"
+      >
+        <span class="stat-value">{{ cars[currentCarIndex].currentKm }}</span>
+        <span class="stat-unit">km</span>
+        <span class="edit-hint">Modifier</span>
+      </div>
+
+      <div class="stat-edit-container" *ngIf="isEditingKm">
+        <input
+          type="number"
+          class="inline-input"
+          [min]="cars[currentCarIndex].currentKm"
+          [(ngModel)]="editKmValue"
+          (keyup.enter)="saveKm()"
+          (blur)="saveKm()"
+          autofocus
+        />
+        <span class="stat-unit">km</span>
+      </div>
+    </div>
+
+    <div class="bento-card service-widget">
+      <h3>Prochaine révision</h3>
+      <p>
+        Dans
+        <strong
+          >{{ cars[currentCarIndex].nextServiceKm - cars[currentCarIndex].currentKm }} km</strong
+        >
+      </p>
+      <div class="progress-bar">
+        <div class="fill" [ngStyle]="{ width: getProgressBarWidth(cars[currentCarIndex]) }"></div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noCarTemplate>
+    <div class="empty-state">
+      <p>Aucune voiture dans le garage.</p>
+      <button class="btn-primary" (click)="openModal()">Ajouter ma première voiture</button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Nouvelle Voiture</h2>
+      <button class="close-btn" (click)="closeModal()">X</button>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group half">
+        <label>Marque</label>
+        <input type="text" placeholder="Tesla" class="apple-input" [(ngModel)]="newCar.brand" />
+      </div>
+      <div class="form-group half">
+        <label>Modèle</label>
+        <input type="text" placeholder="Model 3" class="apple-input" [(ngModel)]="newCar.model" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Plaque d'immatriculation</label>
+      <input
+        type="text"
+        placeholder="AB-123-CD"
+        class="apple-input"
+        [(ngModel)]="newCar.licensePlate"
+      />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group half">
+        <label>Km actuel</label>
+        <input type="number" class="apple-input" [(ngModel)]="newCar.currentKm" />
+      </div>
+      <div class="form-group half">
+        <label>Prochaine révision (km)</label>
+        <input type="number" class="apple-input" [(ngModel)]="newCar.nextServiceKm" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Date du prochain Contrôle Technique</label>
+      <input type="date" class="apple-input" [(ngModel)]="newCar.nextCtDate" />
+    </div>
+
+    <div class="form-group">
+      <label>Photo du véhicule</label>
+      <input
+        type="file"
+        class="apple-input"
+        accept="image/png, image/jpeg, image/webp"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-danger-ghost" (click)="closeModal()">Annuler</button>
+      <button class="btn-primary" (click)="saveCar()">Enregistrer</button>
+    </div>
+  </div>
+</div>

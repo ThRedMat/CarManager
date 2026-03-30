@@ -1,0 +1,195 @@
+.layout-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.header {
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  button {
+    padding: 10px 15px;
+    background: #e9ecef;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #1a1a1a;
+    transition: background 0.2s;
+    &:hover {
+      background: #dee2e6;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    color: #1a1a1a;
+  }
+}
+
+.profile-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+
+  .card-header {
+    background: #f8f9fa;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e9ecef;
+
+    h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.2rem;
+      color: #1a1a1a;
+    }
+    p {
+      margin: 0;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+  }
+
+  .card-body {
+    padding: 30px 25px;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #1a1a1a;
+      box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    }
+  }
+}
+
+.help-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.form-separator {
+  height: 1px;
+  background: #e9ecef;
+  margin: 30px 0;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 14px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #333333;
+  }
+}
+
+.alert {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  &-success {
+    background: #d1f5e4;
+    color: #1a7a4a;
+    border: 1px solid #bcecd4;
+  }
+  &-danger {
+    background: #fde8e8;
+    color: #b91c1c;
+    border: 1px solid #f8d7d7;
+  }
+}
+/* --- Animations et Chargement --- */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #6c757d;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1a1a1a;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modifie légèrement ton bouton existant pour gérer l'état inactif */
+.btn-save {
+  /* ... garde tes styles existants ... */
+
+  &:disabled {
+    background-color: #9ca3af; /* Gris clair */
+    cursor: not-allowed;
+    &:hover {
+      background-color: #9ca3af;
+    }
+  }
+}

@@ -1,0 +1,70 @@
+<div class="layout-container">
+  <div class="header">
+    <button (click)="goBack()">Retour au tableau de bord</button>
+    <h2>Infos & Reglages</h2>
+  </div>
+
+  <div class="profile-card">
+    <div class="card-header">
+      <h3>Mes informations personnelles</h3>
+      <p>Mettez a jour vos donnees de connexion et votre profil.</p>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de vos informations...</p>
+      </div>
+
+      <div *ngIf="!isLoading" class="fade-in">
+        <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+        <div class="form-group">
+          <label>Adresse Email</label>
+          <input type="email" [(ngModel)]="userData.email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Prenom</label>
+          <input
+            type="text"
+            [(ngModel)]="userData.first_name"
+            class="form-control"
+            placeholder="Ex: Jean"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Nom de famille</label>
+          <input
+            type="text"
+            [(ngModel)]="userData.last_name"
+            class="form-control"
+            placeholder="Ex: Dupont"
+          />
+        </div>
+
+        <div class="form-separator"></div>
+
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input
+            type="password"
+            [(ngModel)]="userData.plainPassword"
+            class="form-control"
+            placeholder="Laisser vide pour ne pas modifier"
+          />
+          <small class="help-text"
+            >Remplissez ce champ uniquement si vous souhaitez changer votre mot de passe
+            actuel.</small
+          >
+        </div>
+
+        <button class="btn-save" (click)="saveProfile()" [disabled]="isSaving">
+          {{ isSaving ? 'Enregistrement en cours...' : 'Enregistrer les modifications' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

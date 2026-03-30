@@ -1,0 +1,26 @@
+<nav class="top-navbar">
+  <div class="navbar-brand">
+    <span class="logo-text">VirtualGarage</span>
+  </div>
+
+  <ul class="navbar-links">
+    <li>
+      <a routerLink="/dashboard" routerLinkActive="active-link">Tableau de bord</a>
+    </li>
+    <li>
+      <a routerLink="/history" routerLinkActive="active-link">Historique global</a>
+    </li>
+    <li>
+      <a routerLink="/profile" routerLinkActive="active-link">Infos & Reglages</a>
+    </li>
+  </ul>
+
+  <div class="user-profile-container" (click)="toggleProfileMenu()">
+    <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+    <span class="user-email">Bonjour, {{ userName }}</span>
+
+    <div class="dropdown-menu" *ngIf="isProfileMenuOpen">
+      <button class="dropdown-item text-danger" (click)="logout()">Déconnexion</button>
+    </div>
+  </div>
+</nav>

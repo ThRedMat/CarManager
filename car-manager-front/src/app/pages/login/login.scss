@@ -1,0 +1,113 @@
+/* FOND DE PAGE AVEC DÉGRADÉ FLOU */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #a1c4fd 0%, #c2e9fb 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* LA CARTE EN VERRE (GLASSMORPHISM) */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7); /* Blanc transparent */
+  backdrop-filter: blur(20px); /* Le flou derrière */
+  -webkit-backdrop-filter: blur(20px); /* Pour Safari */
+  padding: 40px;
+  border-radius: 24px; /* Coins très arrondis */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+/* TEXTES */
+.header {
+  margin-bottom: 30px;
+
+  .icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #1d1d1f;
+    font-weight: 700;
+  }
+  p {
+    margin: 5px 0 0;
+    color: #86868b;
+    font-size: 14px;
+  }
+}
+
+/* CHAMPS DE SAISIE */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: #86868b;
+    margin-bottom: 5px;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+
+  .apple-input {
+    width: 100%;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid transparent;
+    border-radius: 14px; /* Forme de pilule douce */
+    font-size: 16px;
+    color: #1d1d1f;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Important pour ne pas dépasser */
+
+    &:focus {
+      background: white;
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1); /* Halo bleu Apple */
+    }
+  }
+}
+
+/* BOUTON BLEU */
+.btn-apple {
+  width: 100%;
+  padding: 16px;
+  background: #007aff; /* Le bleu officiel Apple */
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #0062cc;
+  }
+}
+
+/* LIENS */
+.footer-links {
+  margin-top: 25px;
+  font-size: 13px;
+
+  a {
+    color: #86868b;
+    text-decoration: none;
+
+    strong {
+      color: #007aff;
+    }
+    &:hover strong {
+      text-decoration: underline;
+    }
+  }
+}

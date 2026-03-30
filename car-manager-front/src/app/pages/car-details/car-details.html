@@ -1,0 +1,258 @@
+<div class="header">
+  <div class="header-left">
+    <button class="btn-back" (click)="goBack()">&larr; Retour</button>
+    <h2 *ngIf="car">Garage Virtuel : {{ car.brand }} {{ car.model }}</h2>
+  </div>
+
+  <div class="header-right">
+    <button class="btn-export-pdf" (click)="exportToPDF()" *ngIf="entretiens.length > 0">
+      Exporter en PDF
+    </button>
+  </div>
+</div>
+
+<div class="layout-split" *ngIf="car">
+  <div class="virtual-garage-container">
+    <div class="view-selector">
+      <button [class.active]="currentView === 'exterior'" (click)="switchView('exterior')">
+        Exterieur
+      </button>
+      <button [class.active]="currentView === 'engine'" (click)="switchView('engine')">
+        Sous le capot
+      </button>
+    </div>
+
+    <div class="image-wrapper">
+      <img
+        [src]="getMainImage()"
+        class="car-image"
+        alt="Vue du vehicule"
+        (click)="getClickCoordinates($event)"
+      />
+
+      <div
+        *ngFor="let type of currentTypesEntretien"
+        class="hotspot"
+        [class]="'hotspot--' + getStatutByType(type)"
+        [ngStyle]="getHotspotStyle(type)"
+        (click)="openDetail(type)"
+        [title]="type"
+      >
+        <span class="hotspot-pulse"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-panel-container">
+    <div *ngIf="selectedEntretien && !isAdding && !isEditing" class="detail-panel">
+      <div class="detail-header">
+        <h4>{{ selectedEntretien?.libelle }}</h4>
+        <div class="header-actions">
+          <button class="btn-action btn-edit" (click)="editEntretien()">Modifier</button>
+          <button class="btn-action btn-delete" (click)="deleteEntretien()">Supprimer</button>
+          <button class="close-btn" (click)="resetTableFilter()">X</button>
+        </div>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Statut</span>
+          <span class="badge" [class]="'badge--' + selectedEntretien?.statut">
+            {{
+              selectedEntretien?.statut === 'ok'
+                ? 'OK'
+                : selectedEntretien?.statut === 'warn'
+                  ? 'A surveiller'
+                  : 'Urgent'
+            }}
+          </span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.dateRealisation">
+          <span class="detail-label">Dernier entretien</span>
+          <span>{{ selectedEntretien?.dateRealisation | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.dateProchaine">
+          <span class="detail-label">Prochain entretien</span>
+          <span>{{ selectedEntretien?.dateProchaine | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.kmRealise">
+          <span class="detail-label">Km au service</span>
+          <span>{{ selectedEntretien?.kmRealise | number }} km</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.kmProchain">
+          <span class="detail-label">Prochain a</span>
+          <span>{{ selectedEntretien?.kmProchain | number }} km</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.garage">
+          <span class="detail-label">Garage</span>
+          <span>{{ selectedEntretien?.garage }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEntretien?.montant">
+          <span class="detail-label">Montant</span>
+          <span>{{ selectedEntretien?.montant | currency: 'EUR' : 'symbol' : '1.2-2' }}</span>
+        </div>
+
+        <div class="detail-row invoice-row" *ngIf="selectedEntretien?.invoiceName">
+          <span class="detail-label">Justificatif</span>
+          <div *ngIf="!isPdf(selectedEntretien?.invoiceName || '')">
+            <img
+              [src]="getInvoiceUrl(selectedEntretien?.invoiceName || '')"
+              alt="Facture"
+              class="invoice-image"
+            />
+          </div>
+          <div *ngIf="isPdf(selectedEntretien?.invoiceName || '')">
+            <a
+              [href]="getInvoiceUrl(selectedEntretien?.invoiceName || '')"
+              target="_blank"
+              class="btn-view-pdf"
+            >
+              Ouvrir le PDF
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!selectedEntretien && !isAdding && !isEditing" class="empty-state">
+      <h3>Historique d'entretien</h3>
+      <p>
+        Cliquez sur un point du vehicule pour afficher les details, ou ajoutez une intervention
+        manuellement.
+      </p>
+    </div>
+
+    <div *ngIf="isAdding || isEditing" class="detail-panel form-panel">
+      <div class="detail-header">
+        <h4>
+          {{ isEditing ? 'Modifier' : 'Nouvelle intervention' }}
+        </h4>
+        <button class="close-btn" (click)="resetTableFilter()">X</button>
+      </div>
+
+      <div class="detail-body form-body">
+        <div class="form-group">
+          <label>Categorie / Piece concerne</label>
+          <input
+            type="text"
+            [(ngModel)]="newEntretien.type"
+            placeholder="Ex: Essuie-glaces, Pneus..."
+            class="form-control"
+            [disabled]="isEditing"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Libelle de l'intervention</label>
+          <input
+            type="text"
+            [(ngModel)]="newEntretien.libelle"
+            placeholder="Ex: Remplacement"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Date de l'entretien</label>
+          <input type="date" [(ngModel)]="newEntretien.dateRealisation" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Kilometrage de la voiture</label>
+          <input type="number" [(ngModel)]="newEntretien.kmRealise" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Nom du garage</label>
+          <input
+            type="text"
+            [(ngModel)]="newEntretien.garage"
+            placeholder="Ex: Garage du Centre"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Montant paye (EUR)</label>
+          <input
+            type="number"
+            [(ngModel)]="newEntretien.montant"
+            placeholder="Ex: 150"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group" *ngIf="!isEditing">
+          <label>Joindre une facture (PDF ou Image)</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf,image/*"
+            class="form-control"
+          />
+        </div>
+
+        <button class="btn-save" (click)="isEditing ? updateEntretien() : saveEntretien()">
+          {{ isEditing ? 'Mettre a jour' : 'Enregistrer la maintenance' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="historique-section" *ngIf="car">
+  <div class="section-header">
+    <h3>
+      {{
+        activeTableFilter ? 'Historique : ' + activeTableFilter : 'Historique complet du vehicule'
+      }}
+    </h3>
+
+    <div class="header-actions-right">
+      <button *ngIf="activeTableFilter" (click)="resetTableFilter()" class="btn-reset-filter">
+        Voir tout l'historique
+      </button>
+      <button class="btn-add-global" (click)="openGenericAdd()">+ Ajouter un entretien</button>
+    </div>
+  </div>
+
+  <div *ngIf="sortedEntretiens.length === 0" class="empty-state">
+    <p>Aucun entretien n'a encore ete enregistre pour cette piece.</p>
+  </div>
+
+  <table *ngIf="sortedEntretiens.length > 0" class="historique-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Intervention</th>
+        <th>Garage</th>
+        <th>Kilometrage</th>
+        <th>Cout</th>
+        <th>Facture</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of sortedEntretiens">
+        <td>{{ item.dateRealisation | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <strong>{{ item.type }}</strong
+          ><br />
+          <small>{{ item.libelle }}</small>
+        </td>
+        <td>{{ item.garage || '-' }}</td>
+        <td>{{ item.kmRealise ? (item.kmRealise | number) + ' km' : '-' }}</td>
+        <td>{{ item.montant ? item.montant + ' EUR' : '-' }}</td>
+        <td>
+          <a
+            *ngIf="item.invoiceName"
+            [href]="getInvoiceUrl(item.invoiceName)"
+            target="_blank"
+            class="btn-facture"
+            >Voir facture</a
+          >
+          <span *ngIf="!item.invoiceName" class="text-muted">Aucune</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

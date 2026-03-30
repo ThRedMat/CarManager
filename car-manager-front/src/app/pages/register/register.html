@@ -1,0 +1,56 @@
+<div class="register-container">
+  <div class="glass-card">
+    <div class="header">
+      <div class="icon">📝</div>
+      <h1>Créer un compte</h1>
+      <p>Rejoignez le garage.</p>
+    </div>
+
+    <div class="row">
+      <div class="form-group half">
+        <label>Prénom</label>
+        <input
+          type="text"
+          placeholder="Elon"
+          class="apple-input"
+          [(ngModel)]="registerData.firstName"
+        />
+      </div>
+      <div class="form-group half">
+        <label>Nom</label>
+        <input
+          type="text"
+          placeholder="Musk"
+          class="apple-input"
+          [(ngModel)]="registerData.lastName"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="email"
+        placeholder="elon@tesla.com"
+        class="apple-input"
+        [(ngModel)]="registerData.email"
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input
+        type="password"
+        placeholder="••••••••"
+        class="apple-input"
+        [(ngModel)]="registerData.password"
+      />
+    </div>
+
+    <button class="btn-apple" (click)="onRegister()">S'inscrire</button>
+
+    <div class="footer-links">
+      <a routerLink="/login">Déjà un compte ? <strong>Se connecter</strong></a>
+    </div>
+  </div>
+</div>
